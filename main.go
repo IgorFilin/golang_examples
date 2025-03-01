@@ -5,43 +5,28 @@ import (
 	"sync"
 	"time"
 )
+var wg sync.WaitGroup
 
-func printNumbers(wg *sync.WaitGroup) {
-	// Уведомляем WaitGroup о завершении
-	defer wg.Done()
-	defer fmt.Println("Горутина 1 завершилась")
-	for i := 0; i <= 10; i++ {
-		fmt.Printf("Горутина 1 %d \n", i)
-		time.Sleep(500 * time.Millisecond)
-	}
+func sendData(channel chan string) {
+  defer wg.Done()
+  channel <- "Первая запись в канал"
+  time.Sleep(1 * time.Second)
+  channel <- "Последняя запись в канале после одной секунды"
 }
 
-func printNumbers2(wg *sync.WaitGroup) {
-	// Уведомляем WaitGroup о завершении
-	defer wg.Done()
-	defer fmt.Println("Горутина 2 завершилась")
-	for i := 0; i <= 10; i++ {
-		fmt.Printf("Горутина 2 %d \n", i)
-		time.Sleep(1000 * time.Millisecond)
-	}
-}
 
-func main() {
-	// Создаем переменную с группой горутин
-	var wg sync.WaitGroup
-	// Добавляем ожидание одной гарутины, кроме основной
-	wg.Add(2)
-	// Запускаем гарутину и передаём ссылку на переменную горутин
-	go printNumbers(&wg)
-	go printNumbers2(&wg)
-	for i := 0; i <= 10; i++ {
-		fmt.Println("Основной поток")
-	}
-	// Ожидаем завершения горутины
-	wg.Wait()
+func main() { 
+  wg.Add(1)
+  channel := make(chan string, 2)
+  go sendData(channel)
+  fmt.Println("Ожидание получение первых данных из канала")
+  fmt.Println(<-channel)
+  fmt.Println("Ожидание получение вторых данных из канала")
+  fmt.Println(<-channel)
+  fmt.Println("Перед ожидание завершение дочернего потока")
+  wg.Wait()
+  fmt.Println("Завершается основной поток")
 }
 
 // ---- Аннотация
-// Если вам нужно дождаться завершения одной горутины, используйте каналы.
-// Если вам нужно дождаться завершения нескольких горутин, используйте sync.WaitGroup.
-// Ключевое слово defer в Go используется для отложенного выполнения функции или метода. Когда вы пишете defer, функция, следующая за ним, будет выполнена не сразу, а перед возвратом из текущей функции.
+// Каналы используются для обмена данными между горутинами. Они обеспечивают синхронизацию и безопасность.
