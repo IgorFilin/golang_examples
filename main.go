@@ -7,23 +7,30 @@ import (
 )
 var wg sync.WaitGroup
 
-func sendData(channel chan string) {
+func fakeApiRequest() map[string]string  {
+  time.Sleep(4 * time.Second)
+  response := map[string]string{
+    "name": "Igor",
+  }
+  return response
+}
+
+func sendData(channel chan map[string]string) {
   defer wg.Done()
-  channel <- "Первая запись в канал"
-  time.Sleep(1 * time.Second)
-  channel <- "Последняя запись в канале после одной секунды"
+  channel <- fakeApiRequest()
+  fmt.Println("Завершился дополнительный поток")
 }
 
 
 func main() { 
   wg.Add(1)
-  channel := make(chan string, 2)
+  channel := make(chan map[string]string)
   go sendData(channel)
-  fmt.Println("Ожидание получение первых данных из канала")
-  fmt.Println(<-channel)
-  fmt.Println("Ожидание получение вторых данных из канала")
-  fmt.Println(<-channel)
-  fmt.Println("Перед ожидание завершение дочернего потока")
+  for i := 0; i <= 10; i++ {
+    fmt.Printf("Основной поток %d \n", i)
+  }
+  result := <- channel
+  fmt.Print(result)
   wg.Wait()
   fmt.Println("Завершается основной поток")
 }
