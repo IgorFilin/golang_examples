@@ -9,10 +9,20 @@ import (
 func printNumbers(wg *sync.WaitGroup) {
 	// Уведомляем WaitGroup о завершении
 	defer wg.Done()
-	defer fmt.Println("Горутина завершилась")
+	defer fmt.Println("Горутина 1 завершилась")
 	for i := 0; i <= 10; i++ {
-		fmt.Println(i)
+		fmt.Printf("Горутина 1 %d \n", i)
 		time.Sleep(500 * time.Millisecond)
+	}
+}
+
+func printNumbers2(wg *sync.WaitGroup) {
+	// Уведомляем WaitGroup о завершении
+	defer wg.Done()
+	defer fmt.Println("Горутина 2 завершилась")
+	for i := 0; i <= 10; i++ {
+		fmt.Printf("Горутина 2 %d \n", i)
+		time.Sleep(1000 * time.Millisecond)
 	}
 }
 
@@ -20,9 +30,10 @@ func main() {
 	// Создаем переменную с группой горутин
 	var wg sync.WaitGroup
 	// Добавляем ожидание одной гарутины, кроме основной
-	wg.Add(1)
+	wg.Add(2)
 	// Запускаем гарутину и передаём ссылку на переменную горутин
 	go printNumbers(&wg)
+	go printNumbers2(&wg)
 	for i := 0; i <= 10; i++ {
 		fmt.Println("Основной поток")
 	}
