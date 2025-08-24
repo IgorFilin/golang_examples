@@ -1,39 +1,49 @@
 package main
 
 import (
-	"demo/app/codewars"
+	"fmt"
+	"unicode"
 )
 
-// var wg sync.WaitGroup
-
-// func fakeApiRequest() map[string]string  {
-//   time.Sleep(4 * time.Second)
-//   response := map[string]string{
-//     "name": "Igor",
-//   }
-//   return response
-// }
-
-// func sendData(channel chan map[string]string) {
-//   defer wg.Done()
-//   channel <- fakeApiRequest()
-//   fmt.Println("Завершился дополнительный поток")
-// }
+// "demo/app/codewars"/
+// "demo/app/training"
 
 
 func main() { 
-  codewars.Codewars()
-  // wg.Add(1)
-  // channel := make(chan map[string]string)
-  // go sendData(channel)
-  // for i := 0; i <= 10; i++ {
-  //   fmt.Printf("Основной поток %d \n", i)
-  // }
-  // result := <- channel
-  // fmt.Print(result)
-  // wg.Wait()
-  // fmt.Println("Завершается основной поток")
+  result := isPalindrome("Топотт")
+  fmt.Println("Результат: ")
+  fmt.Println(result)
 }
 
-// ---- Аннотация
-// Каналы используются для обмена данными между горутинами. Они обеспечивают синхронизацию и безопасность.
+
+// func isPalindrome(s string) bool {
+// 	trimStr := strings.Trim(s, "")
+// 	lowerStr := strings.ToLower(trimStr)
+// 	arrayWithStr := strings.Split(lowerStr, "")
+// 	slices.Reverse(arrayWithStr)
+// 	fmt.Println(arrayWithStr)
+// 	updatedStr := strings.Join(arrayWithStr,"")
+// 	return lowerStr == updatedStr
+// }
+
+
+func isPalindrome(s string) bool {
+	var clearedArray []rune
+	
+	for _, r := range s {
+		if(unicode.IsLetter(r)) {
+			clearedArray = append(clearedArray, unicode.ToLower(r))
+		}
+	}
+
+	n := len(clearedArray)
+	for i := 0; i < n/2; i++ {
+        if(clearedArray[i] != clearedArray[n - 1 - i]) {
+			return false
+		}
+	}
+	
+	return true
+}
+
+
